@@ -1,0 +1,174 @@
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Autoplay, Pagination, Navigation } from 'swiper/modules';
+import { ArrowRight, Truck, ShieldCheck, Clock, CreditCard } from 'lucide-react';
+import { fetchFeaturedProducts, fetchCategories } from '../redux/slices/productSlice';
+import ProductCard from '../components/product/ProductCard';
+import { InlineLoader } from '../components/common/LoadingSpinner';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
+import 'swiper/css/navigation';
+
+const Home = () => {
+  const dispatch = useDispatch();
+  const { featured, bestSellers, trending, categories, loading } = useSelector((state) => state.products);
+
+  useEffect(() => {
+    dispatch(fetchFeaturedProducts());
+    dispatch(fetchCategories());
+  }, [dispatch]);
+
+  const features = [
+    { icon: Truck, title: 'Free Delivery', desc: 'On orders above ₹499' },
+    { icon: ShieldCheck, title: '100% Secure', desc: 'Verified products only' },
+    { icon: Clock, title: 'Fast Delivery', desc: 'Within 24-48 hours' },
+    { icon: CreditCard, title: 'Secure Payment', desc: 'Multiple payment options' },
+  ];
+
+  const heroBanners = [
+    {
+      image: '/images/banner_atta.png',
+      title: 'Premium Quality Atta',
+      subtitle: 'Freshly milled and rich in nutrients',
+      link: '/products?category=atta-flours',
+    },
+    {
+      image: '/images/banner_dal.png',
+      title: 'Fresh Pulses & Dal',
+      subtitle: 'Wholesome and unpolished lentils',
+      link: '/products?category=dals-pulses',
+    },
+    {
+      image: '/images/banner_oils.png',
+      title: 'Pure Cooking Oils',
+      subtitle: 'Healthy and natural extracted oils',
+      link: '/products?category=edible-oils',
+    },
+    {
+      image: '/images/banner_anaj.png',
+      title: 'Wholesome Anaj & Grains',
+      subtitle: 'Best quality cereals and grains',
+      link: '/products?category=rice-grains',
+    },
+  ];
+
+  if (loading && !featured.length) return <InlineLoader />;
+
+  return (
+    <div className="pb-12">
+      {/* Hero Slider */}
+      <section className="bg-gray-100">
+        <Swiper
+          modules={[Autoplay, Pagination, Navigation]}
+          spaceBetween={0}
+          slidesPerView={1}
+          loop={true}
+          autoplay={{ delay: 5000, disableOnInteraction: false }}
+          pagination={{ clickable: true }}
+          navigation
+          className="h-[300px] md:h-[400px] lg:h-[500px] w-full"
+        >
+          {heroBanners.map((banner, idx) => (
+            <SwiperSlide key={idx}>
+              <div className="block w-full h-full relative">
+                <img src={banner.image} alt={banner.title} className="w-full h-full object-cover pointer-events-none select-none" />
+                <div className="absolute inset-0 bg-black/20 flex flex-col justify-center px-8 md:px-24">
+                  <h2 className="text-3xl md:text-5xl font-display font-bold text-white mb-4 animate-slide-up">{banner.title}</h2>
+                  <p className="text-lg text-white/90 mb-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>{banner.subtitle}</p>
+                  <Link to={banner.link} className="btn-primary w-fit animate-slide-up" style={{ animationDelay: '0.2s' }}>Shop Now</Link>
+                </div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </section>
+
+      {/* Features */}
+      <section className="container-custom py-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {features.map((feature, idx) => {
+            const Icon = feature.icon;
+            return (
+              <div key={idx} className="bg-white p-4 rounded-2xl border border-gray-100 flex items-center gap-4 hover:shadow-md transition-shadow">
+                <div className="w-12 h-12 bg-orange-50 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Icon className="w-6 h-6 text-primary-500" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900 text-sm">{feature.title}</h4>
+                  <p className="text-xs text-gray-500">{feature.desc}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Shop by Categories */}
+      <section className="container-custom py-10">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="section-heading">Shop by Categories</h2>
+          <Link to="/products" className="text-primary-600 font-medium hover:text-primary-700 flex items-center gap-1">
+            View All <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
+          {categories.slice(0, 8).map((cat) => (
+            <Link key={cat._id} to={`/products?category=${cat.slug}`} className="group text-center">
+              <div className="w-full aspect-square bg-white rounded-2xl border border-gray-100 flex items-center justify-center text-4xl shadow-sm group-hover:shadow-md group-hover:border-primary-200 transition-all group-hover:-translate-y-1 mb-3">
+                {cat.icon}
+              </div>
+              <h3 className="text-sm font-medium text-gray-800 group-hover:text-primary-600 transition-colors">{cat.name}</h3>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* Best Sellers */}
+      {bestSellers?.length > 0 && (
+        <section className="container-custom py-10">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="section-heading">Best Sellers</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {bestSellers.slice(0, 8).map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Promo Banner */}
+      <section className="container-custom py-10">
+        <div className="bg-gradient-indian rounded-3xl p-8 md:p-12 text-center md:text-left flex flex-col md:flex-row items-center justify-between shadow-lg">
+          <div className="mb-6 md:mb-0">
+            <h2 className="text-3xl font-display font-bold text-white mb-2">Get 10% Off Your First Order!</h2>
+            <p className="text-orange-100 text-lg">Use code <span className="font-bold text-white bg-black/20 px-2 py-1 rounded">WELCOME10</span> at checkout.</p>
+          </div>
+          <Link to="/products" className="bg-white text-primary-600 font-bold py-3 px-8 rounded-xl shadow-md hover:bg-orange-50 transition-colors">
+            Shop Now
+          </Link>
+        </div>
+      </section>
+
+      {/* Featured Products */}
+      {featured?.length > 0 && (
+        <section className="container-custom py-10">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="section-heading">Featured Products</h2>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {featured.slice(0, 8).map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+};
+
+export default Home;
