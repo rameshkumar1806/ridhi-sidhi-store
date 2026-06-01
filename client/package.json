@@ -34,9 +34,7 @@
     "ridhi-sidhi-store": "file:..",
     "swiper": "^12.1.4",
     "tailwindcss": "^4.3.0",
-    "use-places-autocomplete": "^4.0.1"
-  },
-  "devDependencies": {
+    "use-places-autocomplete": "^4.0.1",
     "@eslint/js": "^10.0.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -46,5 +44,6 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
     "vite": "^8.0.12"
-  }
+  },
+  "devDependencies": {}
 }
