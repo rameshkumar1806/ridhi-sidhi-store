@@ -51,6 +51,17 @@ const Navbar = () => {
   }, [location]);
 
   useEffect(() => {
+    if (showMobileMenu) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showMobileMenu]);
+
+  useEffect(() => {
     const handleClickOutside = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
         dispatch(clearSuggestions());
@@ -291,28 +302,6 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile menu (Drawer for Categories) */}
-        {showMobileMenu && (
-          <div className="md:hidden border-t border-gray-100 bg-white shadow-lg animate-slide-down">
-            <div className="container-custom py-4 space-y-1">
-              {!user && (
-                <div className="flex gap-2 mb-3">
-                  <Link to="/login" className="flex-1 btn-primary text-center text-sm py-2">Login</Link>
-                  <Link to="/register" className="flex-1 btn-secondary text-center text-sm py-2">Register</Link>
-                </div>
-              )}
-              <Link to="/products" onClick={() => setShowMobileMenu(false)} className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 text-gray-700 font-medium">All Products</Link>
-              {CATEGORIES.map((cat) => (
-                <Link key={cat.slug} to={`/products?category=${cat.slug}`} onClick={() => setShowMobileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 text-gray-600 text-sm">
-                  <span>{cat.icon}</span> {cat.name}
-                </Link>
-              ))}
-              <hr className="my-2" />
-              <Link to="/about" onClick={() => setShowMobileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 text-gray-600 text-sm">About Us</Link>
-              <Link to="/contact" onClick={() => setShowMobileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 text-gray-600 text-sm">Contact Us</Link>
-            </div>
-          </div>
-        )}
       </header>
 
       {/* Modern Mobile Bottom Navigation Bar */}
@@ -339,6 +328,73 @@ const Navbar = () => {
           <span className="text-[10px] font-medium">{user ? 'Account' : 'Login'}</span>
         </Link>
       </div>
+
+      {/* Modern Mobile Bottom Categories Drawer */}
+      {showMobileMenu && (
+        <>
+          {/* Backdrop overlay */}
+          <div
+            className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-[60] transition-opacity duration-300 animate-fade-in"
+            onClick={() => setShowMobileMenu(false)}
+          />
+          {/* Drawer container */}
+          <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] bg-white rounded-t-[2rem] shadow-2xl flex flex-col max-h-[85vh] animate-slide-up-drawer">
+            {/* Drawer Header & Pull Tab */}
+            <div className="pt-4 pb-2 px-6 flex flex-col items-center">
+              <div className="w-12 h-1.5 bg-gray-200 rounded-full mb-4" />
+              <div className="flex items-center justify-between w-full border-b border-gray-100 pb-3">
+                <h3 className="text-lg font-bold text-gray-900">Categories</h3>
+                <button
+                  onClick={() => setShowMobileMenu(false)}
+                  className="p-1.5 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+            </div>
+            
+            {/* Drawer Content */}
+            <div className="flex-1 overflow-y-auto px-6 pb-8 custom-scrollbar">
+              {/* Login/Register buttons if not logged in */}
+              {!user && (
+                <div className="flex gap-2.5 mb-4 mt-2">
+                  <Link to="/login" onClick={() => setShowMobileMenu(false)} className="flex-1 btn-primary text-center text-sm py-2">Login</Link>
+                  <Link to="/register" onClick={() => setShowMobileMenu(false)} className="flex-1 btn-secondary text-center text-sm py-2">Register</Link>
+                </div>
+              )}
+              
+              {/* Category Grid */}
+              <div className="grid grid-cols-2 gap-3 mb-6 mt-2">
+                <Link
+                  to="/products"
+                  onClick={() => setShowMobileMenu(false)}
+                  className="col-span-2 flex items-center justify-center gap-2 p-3.5 rounded-xl bg-orange-50 border border-primary-100 hover:bg-orange-100 transition-colors"
+                >
+                  <Store className="w-4 h-4 text-primary-500" />
+                  <span className="text-sm font-bold text-primary-600">All Products</span>
+                </Link>
+                {CATEGORIES.map((cat) => (
+                  <Link
+                    key={cat.slug}
+                    to={`/products?category=${cat.slug}`}
+                    onClick={() => setShowMobileMenu(false)}
+                    className="flex flex-col items-center justify-center p-4 rounded-xl bg-gray-50 border border-gray-100 hover:bg-orange-50 hover:border-primary-100 transition-all text-center"
+                  >
+                    <span className="text-3xl mb-2">{cat.icon}</span>
+                    <span className="text-xs font-semibold text-gray-800">{cat.name}</span>
+                  </Link>
+                ))}
+              </div>
+              
+              {/* Secondary Links */}
+              <div className="border-t border-gray-100 pt-4 pb-2 flex flex-col gap-2">
+                <Link to="/about" onClick={() => setShowMobileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 text-gray-600 text-sm font-medium">About Us</Link>
+                <Link to="/contact" onClick={() => setShowMobileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 text-gray-600 text-sm font-medium">Contact Us</Link>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 };

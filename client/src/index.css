@@ -146,6 +146,19 @@
     background-image: radial-gradient(circle at 20% 50%, rgba(255,107,53,0.05) 0%, transparent 50%),
                       radial-gradient(circle at 80% 50%, rgba(245,158,11,0.05) 0%, transparent 50%);
   }
+  
+  @keyframes slideUpDrawer {
+    0% {
+      transform: translateY(100%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  .animate-slide-up-drawer {
+    animation: slideUpDrawer 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
 }
 
 @media print {
