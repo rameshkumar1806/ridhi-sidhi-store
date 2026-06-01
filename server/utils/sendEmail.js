@@ -58,7 +58,7 @@ export const sendOrderConfirmationEmail = async (order, user) => {
     <p>Thank you for your order! We've received your order and will start processing it soon.</p>
     <div style="background:#fff8f5;border:1px solid #ffe0cc;border-radius:8px;padding:16px;margin:16px 0">
       <p style="margin:0 0 8px;font-weight:bold">Order ID: <span style="color:#FF6B35">#${order._id.toString().slice(-8).toUpperCase()}</span></p>
-      <p style="margin:0">Payment: <span style="text-transform:capitalize">${order.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Online Payment'}</span></p>
+      <p style="margin:0">Payment: <span style="text-transform:capitalize">${order.paymentMethod === 'cod' ? 'Cash on Delivery' : order.paymentMethod === 'whatsapp' ? 'WhatsApp Order' : 'Online Payment'}</span></p>
     </div>
     <table style="width:100%;border-collapse:collapse;margin:16px 0">
       <thead>
@@ -79,7 +79,7 @@ export const sendOrderConfirmationEmail = async (order, user) => {
     </div>
     <div style="background:#f0f9ff;border-radius:8px;padding:16px;margin-top:16px">
       <p style="margin:0 0 4px;font-weight:bold">Delivery Address:</p>
-      <p style="margin:0;color:#555">${order.shippingAddress.fullName}, ${order.shippingAddress.addressLine1}, ${order.shippingAddress.city}, ${order.shippingAddress.state} - ${order.shippingAddress.pincode}</p>
+      <p style="margin:0;color:#555">${order.shippingAddress.fullName}, ${order.shippingAddress.houseNo || ''} ${order.shippingAddress.street || ''}, ${order.shippingAddress.city}, ${order.shippingAddress.state} - ${order.shippingAddress.pincode}</p>
     </div>
     <p style="color:#888;font-size:12px;margin-top:24px">For any queries, WhatsApp us at +91-XXXXXXXXXX or email us at support@ridhisidhi.com</p>
   </div>

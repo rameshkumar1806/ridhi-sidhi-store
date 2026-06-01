@@ -90,7 +90,7 @@ const OrderDetails = () => {
                     <MapPin className="w-5 h-5 text-gray-400" /> Shipping Details
                   </h3>
                   <p className="font-medium text-gray-900">{order.user?.name}</p>
-                  <p className="text-sm text-gray-600 mt-2 leading-relaxed">{order.shippingAddress.address}</p>
+                  <p className="text-sm text-gray-600 mt-2 leading-relaxed">{order.shippingAddress.formattedAddress || `${order.shippingAddress.houseNo || ''} ${order.shippingAddress.street || ''} ${order.shippingAddress.landmark ? '(' + order.shippingAddress.landmark + ')' : ''}`}</p>
                   <p className="text-sm text-gray-600">{order.shippingAddress.city}, {order.shippingAddress.state} - {order.shippingAddress.pincode}</p>
                   <p className="text-sm text-gray-600 mt-2 font-medium">Phone: {order.shippingAddress.phone}</p>
                 </div>
@@ -275,7 +275,7 @@ const OrderDetails = () => {
           <div className="w-1/2 pr-4">
             <h3 className="font-bold text-lg mb-2 uppercase border-b border-gray-300 pb-1">Billed To:</h3>
             <p className="font-bold text-base">{order.user?.name}</p>
-            <p>{order.shippingAddress.address}</p>
+            <p>{order.shippingAddress.formattedAddress || `${order.shippingAddress.houseNo || ''} ${order.shippingAddress.street || ''} ${order.shippingAddress.landmark ? '(' + order.shippingAddress.landmark + ')' : ''}`}</p>
             <p>{order.shippingAddress.city}, {order.shippingAddress.state} - {order.shippingAddress.pincode}</p>
             <p className="mt-2 font-medium">Phone: {order.shippingAddress.phone}</p>
           </div>

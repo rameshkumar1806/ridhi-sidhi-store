@@ -61,6 +61,10 @@ const Checkout = () => {
   }, [items, navigate, step]);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [step]);
+
+  useEffect(() => {
     if (success && currentOrder) {
       dispatch(clearCart());
       dispatch(clearOrderSuccess());
@@ -126,8 +130,34 @@ const Checkout = () => {
       coupon: coupon?.code,
     };
 
-    if (selectedPayment === 'cod') {
-      dispatch(createOrder(orderData));
+    if (selectedPayment === 'cod' || selectedPayment === 'whatsapp') {
+      const dbOrderResult = await dispatch(createOrder(orderData));
+      if (createOrder.fulfilled.match(dbOrderResult) && selectedPayment === 'whatsapp') {
+        const dbOrder = dbOrderResult.payload;
+        const itemsText = dbOrder.orderItems
+          .map((item, index) => `${index + 1}. *${item.name}* - ${item.quantity} x ₹${item.price}`)
+          .join('\n');
+        const address = dbOrder.shippingAddress;
+        const addressText = `${address.houseNo}, ${address.street}, ${address.landmark ? address.landmark + ', ' : ''}${address.city}, ${address.state} - ${address.pincode}`;
+        const message = `Hello Ridhi Sidhi General Store, I would like to place an order!
+
+*Order Details:*
+Order ID: #${dbOrder._id.toString().slice(-8).toUpperCase()}
+Total Amount: ₹${Math.round(dbOrder.totalAmount)}
+Payment Method: WhatsApp Order
+
+*Items:*
+${itemsText}
+
+*Delivery Address:*
+Name: ${address.fullName}
+Phone: ${address.phone}
+Address: ${addressText}
+
+Thank you!`;
+        const whatsappUrl = `https://wa.me/919982548621?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+      }
     } else if (selectedPayment === 'razorpay') {
       const res = await loadRazorpay();
       if (!res) {
@@ -390,6 +420,30 @@ const Checkout = () => {
                       </div>
                     </div>
                   </label>
+
+                  <label className={`block border-2 rounded-xl p-4 cursor-pointer transition-all ${selectedPayment === 'whatsapp' ? 'border-green-500 bg-green-50/30' : 'border-gray-200 hover:border-green-300'}`}>
+                    <div className="flex items-center gap-4">
+                      <input 
+                        type="radio" 
+                        name="payment" 
+                        value="whatsapp"
+                        checked={selectedPayment === 'whatsapp'}
+                        onChange={(e) => setSelectedPayment(e.target.value)}
+                        className="w-5 h-5 text-green-600 focus:ring-green-500"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold text-gray-900 flex items-center gap-2">
+                            Order on WhatsApp
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800 border border-green-200">
+                              Popular 🛵
+                            </span>
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1">Quick checkout. We will contact you on WhatsApp to confirm delivery.</p>
+                      </div>
+                    </div>
+                  </label>
                 </div>
 
                 <div className="pt-8 flex justify-between">
@@ -463,9 +517,13 @@ const Checkout = () => {
                   <button 
                     onClick={handlePlaceOrder} 
                     disabled={loading}
-                    className="btn-primary px-8 flex items-center gap-2 shadow-lg shadow-primary-500/30"
+                    className={`px-8 flex items-center gap-2 shadow-lg rounded-xl font-bold py-3 transition-all ${
+                      selectedPayment === 'whatsapp' 
+                        ? 'bg-green-600 hover:bg-green-700 text-white shadow-green-500/30 hover:-translate-y-0.5' 
+                        : 'btn-primary shadow-primary-500/30'
+                    }`}
                   >
-                    {loading ? 'Processing...' : `Pay ₹${Math.round(totalAmount)}`}
+                    {loading ? 'Processing...' : selectedPayment === 'whatsapp' ? 'Place Order on WhatsApp' : `Pay ₹${Math.round(totalAmount)}`}
                   </button>
                 </div>
               </div>

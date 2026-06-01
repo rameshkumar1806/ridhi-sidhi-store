@@ -171,7 +171,8 @@ const AdminOrders = () => {
             >
               <option value="all">💳 All Methods</option>
               <option value="cod">COD</option>
-              <option value="online">Online Payment</option>
+              <option value="razorpay">Razorpay (Online)</option>
+              <option value="whatsapp">WhatsApp Order</option>
             </select>
 
             <select
@@ -237,7 +238,7 @@ const AdminOrders = () => {
                   <td className="p-4">
                     <div className="flex flex-col gap-1">
                       <span className="text-sm uppercase font-semibold text-gray-700">
-                        {order.paymentMethod === 'cod' ? 'COD' : 'Online'}
+                        {order.paymentMethod === 'cod' ? 'COD' : order.paymentMethod === 'whatsapp' ? 'WhatsApp' : 'Online'}
                       </span>
                       <span className={`text-xs font-bold ${order.isPaid ? 'text-green-600' : 'text-orange-500'}`}>
                         {order.isPaid ? 'Paid' : 'Unpaid'}

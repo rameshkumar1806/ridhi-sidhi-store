@@ -231,7 +231,7 @@ const AdminOrderDetails = () => {
               </h3>
               <div className="p-4 bg-orange-50/50 rounded-2xl border border-orange-100 text-sm leading-relaxed">
                 <p className="font-bold text-gray-900 mb-1">{order.user?.name}</p>
-                <p className="text-gray-700">{order.shippingAddress.address}</p>
+                <p className="text-gray-700">{order.shippingAddress.formattedAddress || `${order.shippingAddress.houseNo || ''} ${order.shippingAddress.street || ''} ${order.shippingAddress.landmark ? '(' + order.shippingAddress.landmark + ')' : ''}`}</p>
                 <p className="text-gray-700">{order.shippingAddress.city}, {order.shippingAddress.state} - {order.shippingAddress.pincode}</p>
               </div>
             </div>

@@ -31,6 +31,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.15.0",
     "recharts": "^3.8.1",
+    "ridhi-sidhi-store": "file:..",
     "swiper": "^12.1.4",
     "tailwindcss": "^4.3.0",
     "use-places-autocomplete": "^4.0.1"

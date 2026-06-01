@@ -118,25 +118,7 @@ const Login = () => {
             Create an account
           </Link>
         </div>
-        
-        {/* Demo Credentials */}
-        <div className="mt-8 pt-6 border-t border-gray-100">
-          <p className="text-xs text-gray-500 text-center mb-3">Demo Credentials</p>
-          <div className="flex gap-2">
-            <button 
-              onClick={() => { setEmail('admin@ridhisidhi.com'); setPassword('Admin@123'); }}
-              className="flex-1 btn-outline py-1.5 text-xs text-gray-600"
-            >
-              Admin
-            </button>
-            <button 
-              onClick={() => { setEmail('test@example.com'); setPassword('Test@123'); }}
-              className="flex-1 btn-outline py-1.5 text-xs text-gray-600"
-            >
-              Customer
-            </button>
-          </div>
-        </div>
+
       </div>
     </div>
   );

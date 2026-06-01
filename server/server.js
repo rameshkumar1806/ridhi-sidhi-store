@@ -73,6 +73,16 @@ app.use('/api/banners', bannerRoutes);
 app.use('/api/admin/users', userRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({
+    success: true,
+    message: '🛒 Ridhi Sidhi General Store API is running!',
+    environment: process.env.NODE_ENV,
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Serve static assets if in production
 if (process.env.NODE_ENV === 'production') {
   const __dirname = path.resolve();
@@ -82,16 +92,6 @@ if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) =>
     res.sendFile(path.resolve(__dirname, '../client', 'dist', 'index.html'))
   );
-} else {
-  // Health check (moved inside else or kept as fallback)
-  app.get('/api/health', (req, res) => {
-    res.json({
-      success: true,
-      message: '🛒 Ridhi Sidhi General Store API is running!',
-      environment: process.env.NODE_ENV,
-      timestamp: new Date().toISOString(),
-    });
-  });
 }
 
 // Error handlers
