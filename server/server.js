@@ -26,8 +26,23 @@ connectDB();
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-// Security
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+// Security with configured Content Security Policy to allow OSM maps, Cloudinary, and Razorpay
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://checkout.razorpay.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
+        imgSrc: ["'self'", "data:", "https://*.tile.openstreetmap.org", "https://cdnjs.cloudflare.com", "https://placehold.co", "https://res.cloudinary.com"],
+        connectSrc: ["'self'", "https://nominatim.openstreetmap.org", "https://api.razorpay.com", "https://res.cloudinary.com"],
+        frameSrc: ["'self'", "https://api.razorpay.com", "https://checkout.razorpay.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      },
+    },
+  })
+);
 
 // Rate limiting
 const limiter = rateLimit({
