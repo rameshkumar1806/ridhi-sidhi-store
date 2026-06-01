@@ -1,14 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateProfile, getProfile } from '../redux/slices/authSlice';
-import { User, Mail, Phone, MapPin, Save, Plus, Trash2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { updateProfile, getProfile, logout } from '../redux/slices/authSlice';
+import { User, Mail, Phone, MapPin, Save, Plus, Trash2, LogOut, LayoutDashboard, Package } from 'lucide-react';
 import { FullPageLoader } from '../components/common/LoadingSpinner';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 
 const Profile = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { user, loading } = useSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    toast.success('Logged out successfully');
+    navigate('/');
+  };
 
   const [formData, setFormData] = useState({
     name: '',
@@ -101,6 +109,32 @@ const Profile = () => {
               <p className="text-gray-500 text-sm mt-1">{user?.email}</p>
               <div className="mt-4 inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-700 text-xs font-semibold rounded-full">
                 {user?.role === 'admin' ? 'Admin Account' : 'Customer Account'}
+              </div>
+
+              {/* Quick Action Navigation / Logout */}
+              <div className="mt-6 pt-6 border-t border-gray-100 flex flex-col gap-2.5">
+                {user?.role === 'admin' ? (
+                  <button
+                    onClick={() => navigate('/admin')}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-50 hover:bg-orange-100 text-primary-600 text-sm font-semibold rounded-xl transition-colors border border-primary-100 cursor-pointer"
+                  >
+                    <LayoutDashboard className="w-4 h-4" /> Admin Dashboard
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => navigate('/my-orders')}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-50 hover:bg-orange-100 text-primary-600 text-sm font-semibold rounded-xl transition-colors border border-primary-100 cursor-pointer"
+                  >
+                    <Package className="w-4 h-4" /> My Orders
+                  </button>
+                )}
+                
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold rounded-xl transition-colors border border-red-100 cursor-pointer"
+                >
+                  <LogOut className="w-4 h-4" /> Logout
+                </button>
               </div>
             </div>
           </div>

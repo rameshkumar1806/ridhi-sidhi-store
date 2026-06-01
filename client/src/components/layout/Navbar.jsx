@@ -356,10 +356,20 @@ const Navbar = () => {
             {/* Drawer Content */}
             <div className="flex-1 overflow-y-auto px-6 pb-8 custom-scrollbar">
               {/* Login/Register buttons if not logged in */}
-              {!user && (
+              {!user ? (
                 <div className="flex gap-2.5 mb-4 mt-2">
                   <Link to="/login" onClick={() => setShowMobileMenu(false)} className="flex-1 btn-primary text-center text-sm py-2">Login</Link>
                   <Link to="/register" onClick={() => setShowMobileMenu(false)} className="flex-1 btn-secondary text-center text-sm py-2">Register</Link>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-orange-50/50 border border-primary-100 mb-4 mt-2">
+                  <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-base shadow-sm">
+                    {user.name?.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-gray-900 truncate">Hello, {user.name?.split(' ')[0]}</p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  </div>
                 </div>
               )}
               
@@ -386,6 +396,50 @@ const Navbar = () => {
                 ))}
               </div>
               
+              {/* Account Quick Links if logged in */}
+              {user && (
+                <div className="border-t border-gray-100 pt-4 mb-4 flex flex-col gap-2">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 px-4 mb-1">Account & Orders</p>
+                  <Link
+                    to="/profile"
+                    onClick={() => setShowMobileMenu(false)}
+                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+                  >
+                    <User className="w-4 h-4 text-gray-500" />
+                    <span>My Profile</span>
+                  </Link>
+                  {user.role === 'admin' ? (
+                    <Link
+                      to="/admin"
+                      onClick={() => setShowMobileMenu(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 text-sm font-medium text-primary-600 transition-colors"
+                    >
+                      <LayoutDashboard className="w-4 h-4" />
+                      <span>Admin Dashboard</span>
+                    </Link>
+                  ) : (
+                    <Link
+                      to="/my-orders"
+                      onClick={() => setShowMobileMenu(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+                    >
+                      <Package className="w-4 h-4 text-gray-500" />
+                      <span>My Orders</span>
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => {
+                      setShowMobileMenu(false);
+                      handleLogout();
+                    }}
+                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-red-50 text-red-600 text-sm font-medium transition-colors text-left w-full cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4 text-red-500" />
+                    <span>Logout</span>
+                  </button>
+                </div>
+              )}
+
               {/* Secondary Links */}
               <div className="border-t border-gray-100 pt-4 pb-2 flex flex-col gap-2">
                 <Link to="/about" onClick={() => setShowMobileMenu(false)} className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 text-gray-600 text-sm font-medium">About Us</Link>
