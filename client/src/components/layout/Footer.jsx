@@ -1,8 +1,27 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Store, Phone, Mail, MapPin, Clock, Heart } from 'lucide-react';
 import { FaFacebook as Facebook, FaInstagram as Instagram, FaTwitter as Twitter, FaYoutube as Youtube } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const Footer = () => {
+  const [email, setEmail] = useState('');
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      toast.error('Please enter your email address');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast.error('Please enter a valid email address');
+      return;
+    }
+    toast.success('Thank you for subscribing to our newsletter! 🚀');
+    setEmail('');
+  };
+
   return (
     <footer className="bg-gray-900 text-gray-300">
       {/* Newsletter section */}
@@ -13,13 +32,15 @@ const Footer = () => {
               <h3 className="text-2xl font-display font-bold text-white">Stay Updated! 🛒</h3>
               <p className="text-orange-100 mt-1">Get the latest deals, offers and new arrivals directly in your inbox.</p>
             </div>
-            <form className="flex w-full md:w-auto gap-2" onSubmit={(e) => e.preventDefault()}>
+            <form className="flex flex-col sm:flex-row w-full md:w-auto gap-3" onSubmit={handleSubscribe}>
               <input
                 type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email..."
-                className="flex-1 md:w-72 px-4 py-3 rounded-xl bg-white/20 backdrop-blur text-white placeholder-orange-200 border border-white/30 focus:outline-none focus:border-white text-sm"
+                className="w-full sm:w-72 px-4 py-3 rounded-xl bg-white/20 backdrop-blur text-white placeholder-orange-200 border border-white/30 focus:outline-none focus:border-white text-sm"
               />
-              <button type="submit" className="bg-white text-primary-600 font-semibold px-6 py-3 rounded-xl hover:bg-orange-50 transition-colors text-sm whitespace-nowrap">
+              <button type="submit" className="w-full sm:w-auto bg-white text-primary-600 font-semibold px-6 py-3 rounded-xl hover:bg-orange-50 transition-colors text-sm whitespace-nowrap">
                 Subscribe
               </button>
             </form>
