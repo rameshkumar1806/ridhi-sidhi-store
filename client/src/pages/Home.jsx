@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -7,6 +7,7 @@ import { ArrowRight, Truck, ShieldCheck, Clock, CreditCard, ChevronLeft, Chevron
 import { fetchFeaturedProducts, fetchCategories } from '../redux/slices/productSlice';
 import ProductCard from '../components/product/ProductCard';
 import { CategorySkeleton, ProductGridSkeleton } from '../components/common/Skeletons';
+import api from '../services/api';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -17,19 +18,25 @@ const Home = () => {
   const dispatch = useDispatch();
   const { featured, bestSellers, trending, categories, loading } = useSelector((state) => state.products);
 
-  useEffect(() => {
-    dispatch(fetchFeaturedProducts());
-    dispatch(fetchCategories());
-  }, [dispatch]);
-
-  const features = [
-    { icon: Truck, title: 'Free Delivery', desc: 'On orders above ₹499' },
-    { icon: ShieldCheck, title: '100% Secure', desc: 'Verified products only' },
-    { icon: Clock, title: 'Fast Delivery', desc: 'Within 24-48 hours' },
-    { icon: CreditCard, title: 'Secure Payment', desc: 'Multiple payment options' },
-  ];
-
-  const heroBanners = [
+  const [heroBanners, setHeroBanners] = useState([
+    {
+      image: '/images/fresh_groceries_banner.png',
+      title: 'Fresh Groceries Delivered Daily',
+      subtitle: 'Quality products at best prices',
+      link: '/products',
+    },
+    {
+      image: '/images/dry_fruits_banner.png',
+      title: 'Premium Dry Fruits Sale',
+      subtitle: 'Up to 20% off on dry fruits & nuts',
+      link: '/products?category=dry-fruits-nuts',
+    },
+    {
+      image: '/images/banner_oils.png',
+      title: 'Pure Ghee & Oils',
+      subtitle: 'Authentic taste, healthy cooking',
+      link: '/products?category=oils-ghee',
+    },
     {
       image: '/images/banner_atta.png',
       title: 'Premium Quality Atta',
@@ -43,17 +50,61 @@ const Home = () => {
       link: '/products?category=dals-pulses',
     },
     {
-      image: '/images/banner_oils.png',
-      title: 'Pure Cooking Oils',
-      subtitle: 'Healthy and natural extracted oils',
-      link: '/products?category=edible-oils',
-    },
-    {
       image: '/images/banner_anaj.png',
       title: 'Wholesome Anaj & Grains',
       subtitle: 'Best quality cereals and grains',
       link: '/products?category=rice-grains',
     },
+  ]);
+
+  useEffect(() => {
+    dispatch(fetchFeaturedProducts());
+    dispatch(fetchCategories());
+
+    const loadBanners = async () => {
+      try {
+        const { data } = await api.get('/banners');
+        if (data?.success && data.data?.length > 0) {
+          // Frontend validation: Prevent duplicate banners from being displayed
+          const seen = new Set();
+          const uniqueBanners = [];
+          for (const banner of data.data) {
+            const key = (banner.title || '').trim().toLowerCase();
+            if (!seen.has(key)) {
+              seen.add(key);
+
+              // Map placeholder/database images to high-quality local assets
+              let displayImage = banner.image;
+              if (key.includes('groceries') || key.includes('fresh')) {
+                displayImage = '/images/fresh_groceries_banner.png';
+              } else if (key.includes('dry fruits') || key.includes('nuts')) {
+                displayImage = '/images/dry_fruits_banner.png';
+              } else if (key.includes('ghee') || key.includes('oil')) {
+                displayImage = '/images/banner_oils.png';
+              }
+
+              uniqueBanners.push({
+                ...banner,
+                image: displayImage,
+              });
+            }
+          }
+          if (uniqueBanners.length > 0) {
+            setHeroBanners(uniqueBanners);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load database banners:', err);
+      }
+    };
+    loadBanners();
+  }, [dispatch]);
+
+  const features = [
+    { icon: Truck, title: 'Free Delivery', desc: 'On orders above ₹499' },
+    { icon: ShieldCheck, title: '100% Secure', desc: 'Verified products only' },
+    { icon: Clock, title: 'Fast Delivery', desc: 'Within 24-48 hours' },
+    { icon: CreditCard, title: 'Secure Payment', desc: 'Multiple payment options' },
   ];
 
   return (

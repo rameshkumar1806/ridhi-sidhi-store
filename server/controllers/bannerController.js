@@ -9,7 +9,22 @@ export const getBanners = asyncHandler(async (req, res) => {
   const filter = { isActive: true };
   if (type) filter.type = type;
   const banners = await Banner.find(filter).sort({ sortOrder: 1 }).lean();
-  res.json({ success: true, data: banners });
+
+  const seen = new Set();
+  const uniqueBanners = [];
+
+  for (const banner of banners) {
+    const key = (banner.title || '').trim().toLowerCase();
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueBanners.push(banner);
+    } else {
+      // Automatically remove duplicate banner record from database
+      await Banner.findByIdAndDelete(banner._id);
+    }
+  }
+
+  res.json({ success: true, data: uniqueBanners });
 });
 
 // @desc    Get all banners (Admin)
