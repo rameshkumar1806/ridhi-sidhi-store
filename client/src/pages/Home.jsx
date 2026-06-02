@@ -53,23 +53,35 @@ const Home = () => {
       try {
         const { data } = await api.get('/banners');
         if (data?.success && data.data?.length > 0) {
-          // Frontend validation: Prevent duplicate banners from being displayed
+          // Frontend validation: Only allow the 4 desired categories and prevent duplicates
           const seen = new Set();
           const uniqueBanners = [];
           for (const banner of data.data) {
             const key = (banner.title || '').trim().toLowerCase();
-            if (!seen.has(key)) {
-              seen.add(key);
+            
+            let matchedCategory = null;
+            if (key.includes('atta') || key.includes('flour')) {
+              matchedCategory = 'atta';
+            } else if (key.includes('dry fruits') || key.includes('nuts')) {
+              matchedCategory = 'dry_fruits';
+            } else if (key.includes('ghee') || key.includes('oil') || key.includes('cooking oils')) {
+              matchedCategory = 'oils';
+            } else if (key.includes('dal') || key.includes('pulses') || key.includes('collection')) {
+              matchedCategory = 'dal';
+            }
+
+            if (matchedCategory && !seen.has(matchedCategory)) {
+              seen.add(matchedCategory);
 
               // Map placeholder/database images to high-quality local assets
               let displayImage = banner.image;
-              if (key.includes('atta') || key.includes('flour')) {
+              if (matchedCategory === 'atta') {
                 displayImage = '/images/banner_atta.png';
-              } else if (key.includes('dry fruits') || key.includes('nuts')) {
+              } else if (matchedCategory === 'dry_fruits') {
                 displayImage = '/images/dry_fruits_banner.png';
-              } else if (key.includes('ghee') || key.includes('oil') || key.includes('cooking oils')) {
+              } else if (matchedCategory === 'oils') {
                 displayImage = '/images/banner_oils.png';
-              } else if (key.includes('dal') || key.includes('pulses')) {
+              } else if (matchedCategory === 'dal') {
                 displayImage = '/images/banner_dal.png';
               }
 
@@ -79,6 +91,33 @@ const Home = () => {
               });
             }
           }
+
+          // Enforce the exact order: Atta (1), Oils (2), Dry Fruits (3), Dal (4)
+          const orderMap = {
+            'atta': 1,
+            'oils': 2,
+            'dry_fruits': 3,
+            'dal': 4
+          };
+          uniqueBanners.sort((a, b) => {
+            const aKey = (a.title || '').trim().toLowerCase();
+            const bKey = (b.title || '').trim().toLowerCase();
+            
+            let aCat = '';
+            if (aKey.includes('atta') || aKey.includes('flour')) aCat = 'atta';
+            else if (aKey.includes('ghee') || aKey.includes('oil') || aKey.includes('cooking oils')) aCat = 'oils';
+            else if (aKey.includes('dry fruits') || aKey.includes('nuts')) aCat = 'dry_fruits';
+            else if (aKey.includes('dal') || aKey.includes('pulses') || aKey.includes('collection')) aCat = 'dal';
+
+            let bCat = '';
+            if (bKey.includes('atta') || bKey.includes('flour')) bCat = 'atta';
+            else if (bKey.includes('ghee') || bKey.includes('oil') || bKey.includes('cooking oils')) bCat = 'oils';
+            else if (bKey.includes('dry fruits') || bKey.includes('nuts')) bCat = 'dry_fruits';
+            else if (bKey.includes('dal') || bKey.includes('pulses') || bKey.includes('collection')) bCat = 'dal';
+
+            return (orderMap[aCat] || 99) - (orderMap[bCat] || 99);
+          });
+
           if (uniqueBanners.length > 0) {
             setHeroBanners(uniqueBanners);
           }
