@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination, Navigation } from 'swiper/modules';
-import { ArrowRight, Truck, ShieldCheck, Clock, CreditCard } from 'lucide-react';
+import { ArrowRight, Truck, ShieldCheck, Clock, CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
 import { fetchFeaturedProducts, fetchCategories } from '../redux/slices/productSlice';
 import ProductCard from '../components/product/ProductCard';
 import { CategorySkeleton, ProductGridSkeleton } from '../components/common/Skeletons';
@@ -67,8 +67,11 @@ const Home = () => {
           loop={true}
           autoplay={{ delay: 5000, disableOnInteraction: false }}
           pagination={{ clickable: true }}
-          navigation
-          className="h-[300px] md:h-[400px] lg:h-[500px] w-full"
+          navigation={{
+            prevEl: '.swiper-button-prev-custom',
+            nextEl: '.swiper-button-next-custom',
+          }}
+          className="h-[300px] md:h-[400px] lg:h-[500px] w-full group/slider relative"
         >
           {heroBanners.map((banner, idx) => (
             <SwiperSlide key={idx}>
@@ -82,6 +85,14 @@ const Home = () => {
               </div>
             </SwiperSlide>
           ))}
+
+          {/* Custom Navigation Buttons (Modern E-commerce Style) */}
+          <button className="swiper-button-prev-custom absolute left-2 md:left-6 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-12 md:h-12 bg-white/90 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow-md hover:shadow-lg border border-gray-100 transition-all duration-300 cursor-pointer md:opacity-0 md:-translate-x-4 md:group-hover/slider:opacity-100 md:group-hover/slider:translate-x-0">
+            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-gray-700 hover:text-primary-600 transition-colors" />
+          </button>
+          <button className="swiper-button-next-custom absolute right-2 md:right-6 top-1/2 -translate-y-1/2 z-10 w-9 h-9 md:w-12 md:h-12 bg-white/90 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow-md hover:shadow-lg border border-gray-100 transition-all duration-300 cursor-pointer md:opacity-0 md:translate-x-4 md:group-hover/slider:opacity-100 md:group-hover/slider:translate-x-0">
+            <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-gray-700 hover:text-primary-600 transition-colors" />
+          </button>
         </Swiper>
       </section>
 
