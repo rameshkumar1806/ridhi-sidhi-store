@@ -79,5 +79,10 @@ productSchema.virtual('finalPrice').get(function () {
   return this.price;
 });
 
+// Compound indexes for landing page queries
+productSchema.index({ isFeatured: 1, isActive: 1 });
+productSchema.index({ isBestSeller: 1, isActive: 1 });
+productSchema.index({ isTrending: 1, isActive: 1 });
+
 const Product = mongoose.model('Product', productSchema);
 export default Product;

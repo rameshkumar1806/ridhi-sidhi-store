@@ -281,18 +281,20 @@ export const createReview = asyncHandler(async (req, res) => {
 // @route   GET /api/products/featured
 // @access  Public
 export const getFeaturedProducts = asyncHandler(async (req, res) => {
-  const featured = await Product.find({ isFeatured: true, isActive: true })
-    .populate('category', 'name slug')
-    .limit(8)
-    .lean();
-  const bestSellers = await Product.find({ isBestSeller: true, isActive: true })
-    .populate('category', 'name slug')
-    .limit(8)
-    .lean();
-  const trending = await Product.find({ isTrending: true, isActive: true })
-    .populate('category', 'name slug')
-    .limit(8)
-    .lean();
+  const [featured, bestSellers, trending] = await Promise.all([
+    Product.find({ isFeatured: true, isActive: true })
+      .populate('category', 'name slug')
+      .limit(8)
+      .lean(),
+    Product.find({ isBestSeller: true, isActive: true })
+      .populate('category', 'name slug')
+      .limit(8)
+      .lean(),
+    Product.find({ isTrending: true, isActive: true })
+      .populate('category', 'name slug')
+      .limit(8)
+      .lean(),
+  ]);
 
   res.json({ success: true, data: { featured, bestSellers, trending } });
 });

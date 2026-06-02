@@ -102,10 +102,19 @@ const productSlice = createSlice({
         state.relatedProducts = action.payload.related;
       })
       .addCase(fetchProduct.rejected, (state, action) => { state.productLoading = false; state.error = action.payload; })
+      .addCase(fetchFeaturedProducts.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(fetchFeaturedProducts.fulfilled, (state, action) => {
+        state.loading = false;
         state.featured = action.payload.featured;
         state.bestSellers = action.payload.bestSellers;
         state.trending = action.payload.trending;
+      })
+      .addCase(fetchFeaturedProducts.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       })
       .addCase(fetchCategories.fulfilled, (state, action) => { state.categories = action.payload; })
       .addCase(fetchSearchSuggestions.fulfilled, (state, action) => { state.suggestions = action.payload; })

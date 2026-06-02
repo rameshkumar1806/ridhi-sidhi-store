@@ -123,4 +123,19 @@ app.listen(PORT, () => {
 🕐 Started : ${new Date().toLocaleString('en-IN')}
 ==========================================
   `);
+
+  // Render Free Tier Keep-Alive Self-Pinger
+  const backendUrl = process.env.BACKEND_URL;
+  if (backendUrl) {
+    console.log(`📡 Keep-Alive configured for: ${backendUrl}`);
+    setInterval(async () => {
+      try {
+        const res = await fetch(`${backendUrl}/api/health`);
+        const data = await res.json();
+        console.log(`💓 Keep-alive ping status: ${res.status} (${data.success ? 'Success' : 'Failed'})`);
+      } catch (err) {
+        console.error('❌ Keep-alive ping failed:', err.message);
+      }
+    }, 14 * 60 * 1000); // Ping every 14 minutes (Render free tier sleeps after 15 mins)
+  }
 });

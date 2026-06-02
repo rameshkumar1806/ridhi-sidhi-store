@@ -6,7 +6,7 @@ import { Autoplay, Pagination, Navigation } from 'swiper/modules';
 import { ArrowRight, Truck, ShieldCheck, Clock, CreditCard } from 'lucide-react';
 import { fetchFeaturedProducts, fetchCategories } from '../redux/slices/productSlice';
 import ProductCard from '../components/product/ProductCard';
-import { InlineLoader } from '../components/common/LoadingSpinner';
+import { CategorySkeleton, ProductGridSkeleton } from '../components/common/Skeletons';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -55,8 +55,6 @@ const Home = () => {
       link: '/products?category=rice-grains',
     },
   ];
-
-  if (loading && !featured.length) return <InlineLoader />;
 
   return (
     <div className="pb-12">
@@ -115,29 +113,37 @@ const Home = () => {
             View All <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
-          {categories.slice(0, 8).map((cat) => (
-            <Link key={cat._id} to={`/products?category=${cat.slug}`} className="group text-center">
-              <div className="w-full aspect-square bg-white rounded-2xl border border-gray-100 flex items-center justify-center text-4xl shadow-sm group-hover:shadow-md group-hover:border-primary-200 transition-all group-hover:-translate-y-1 mb-3">
-                {cat.icon}
-              </div>
-              <h3 className="text-sm font-medium text-gray-800 group-hover:text-primary-600 transition-colors">{cat.name}</h3>
-            </Link>
-          ))}
-        </div>
+        {loading && !categories.length ? (
+          <CategorySkeleton />
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-4">
+            {categories.slice(0, 8).map((cat) => (
+              <Link key={cat._id} to={`/products?category=${cat.slug}`} className="group text-center">
+                <div className="w-full aspect-square bg-white rounded-2xl border border-gray-100 flex items-center justify-center text-4xl shadow-sm group-hover:shadow-md group-hover:border-primary-200 transition-all group-hover:-translate-y-1 mb-3">
+                  {cat.icon}
+                </div>
+                <h3 className="text-sm font-medium text-gray-800 group-hover:text-primary-600 transition-colors">{cat.name}</h3>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Best Sellers */}
-      {bestSellers?.length > 0 && (
+      {(loading || bestSellers?.length > 0) && (
         <section className="container-custom py-10">
           <div className="flex items-center justify-between mb-8">
             <h2 className="section-heading">Best Sellers</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {bestSellers.slice(0, 8).map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
+          {loading && !bestSellers.length ? (
+            <ProductGridSkeleton count={4} />
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {bestSellers.slice(0, 8).map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          )}
         </section>
       )}
 
@@ -155,16 +161,20 @@ const Home = () => {
       </section>
 
       {/* Featured Products */}
-      {featured?.length > 0 && (
+      {(loading || featured?.length > 0) && (
         <section className="container-custom py-10">
           <div className="flex items-center justify-between mb-8">
             <h2 className="section-heading">Featured Products</h2>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {featured.slice(0, 8).map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
-          </div>
+          {loading && !featured.length ? (
+            <ProductGridSkeleton count={4} />
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {featured.slice(0, 8).map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
+            </div>
+          )}
         </section>
       )}
     </div>

@@ -156,6 +156,15 @@
     }
   }
 
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
   .animate-slide-up-drawer {
     animation: slideUpDrawer 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
@@ -176,4 +185,55 @@
     margin: 0;
     padding: 0;
   }
+}
+
+/* Swiper Custom Navigation Buttons & Pagination styling */
+.swiper-button-next,
+.swiper-button-prev {
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(8px) !important;
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 9999px !important;
+  color: #FF6B35 !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
+  border: 1px solid rgba(255, 107, 53, 0.15) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 16px !important;
+  font-weight: bold !important;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background: #FF6B35 !important;
+  color: #ffffff !important;
+  transform: scale(1.06) !important;
+  box-shadow: 0 6px 15px rgba(255, 107, 53, 0.3) !important;
+}
+
+.swiper-button-next {
+  right: 16px !important;
+}
+
+.swiper-button-prev {
+  left: 16px !important;
+}
+
+.swiper-pagination-bullet {
+  background: #cbd5e1 !important;
+  opacity: 0.6 !important;
+  width: 8px !important;
+  height: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.swiper-pagination-bullet-active {
+  background: #FF6B35 !important;
+  opacity: 1 !important;
+  width: 20px !important;
+  border-radius: 4px !important;
 }
