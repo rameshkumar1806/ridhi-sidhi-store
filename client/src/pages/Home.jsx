@@ -20,28 +20,16 @@ const Home = () => {
 
   const [heroBanners, setHeroBanners] = useState([
     {
-      image: '/images/fresh_groceries_banner.png',
-      title: 'Fresh Groceries Delivered Daily',
-      subtitle: 'Quality products at best prices',
-      link: '/products',
-    },
-    {
-      image: '/images/dry_fruits_banner.png',
-      title: 'Premium Dry Fruits Sale',
-      subtitle: 'Up to 20% off on dry fruits & nuts',
-      link: '/products?category=dry-fruits-nuts',
-    },
-    {
-      image: '/images/banner_oils.png',
-      title: 'Pure Ghee & Oils',
-      subtitle: 'Authentic taste, healthy cooking',
-      link: '/products?category=oils-ghee',
-    },
-    {
       image: '/images/banner_atta.png',
       title: 'Premium Quality Atta',
       subtitle: 'Freshly milled and rich in nutrients',
       link: '/products?category=atta-flours',
+    },
+    {
+      image: '/images/banner_oils.png',
+      title: 'Pure Cooking Oils',
+      subtitle: 'Healthy and natural extracted oils',
+      link: '/products?category=edible-oils',
     },
     {
       image: '/images/banner_dal.png',
@@ -50,10 +38,10 @@ const Home = () => {
       link: '/products?category=dals-pulses',
     },
     {
-      image: '/images/banner_anaj.png',
-      title: 'Wholesome Anaj & Grains',
-      subtitle: 'Best quality cereals and grains',
-      link: '/products?category=rice-grains',
+      image: '/images/dry_fruits_banner.png',
+      title: 'Premium Dry Fruits Sale',
+      subtitle: 'Up to 20% off on dry fruits & nuts',
+      link: '/products?category=dry-fruits-nuts',
     },
   ]);
 
@@ -75,12 +63,14 @@ const Home = () => {
 
               // Map placeholder/database images to high-quality local assets
               let displayImage = banner.image;
-              if (key.includes('groceries') || key.includes('fresh')) {
-                displayImage = '/images/fresh_groceries_banner.png';
+              if (key.includes('atta')) {
+                displayImage = '/images/banner_atta.png';
               } else if (key.includes('dry fruits') || key.includes('nuts')) {
                 displayImage = '/images/dry_fruits_banner.png';
-              } else if (key.includes('ghee') || key.includes('oil')) {
+              } else if (key.includes('ghee') || key.includes('oil') || key.includes('cooking oils')) {
                 displayImage = '/images/banner_oils.png';
+              } else if (key.includes('dal') || key.includes('pulses')) {
+                displayImage = '/images/banner_dal.png';
               }
 
               uniqueBanners.push({
