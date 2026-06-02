@@ -90,7 +90,7 @@ const Home = () => {
           <button className="swiper-button-prev-custom absolute hidden md:flex left-6 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/90 hover:bg-white text-gray-800 rounded-full items-center justify-center shadow-md hover:shadow-lg border border-gray-100 transition-all duration-300 cursor-pointer md:opacity-0 md:-translate-x-4 md:group-hover/slider:opacity-100 md:group-hover/slider:translate-x-0">
             <ChevronLeft className="w-6 h-6 text-gray-700 hover:text-primary-600 transition-colors" />
           </button>
-          <button className="swiper-button-next-custom absolute right-6 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/90 hover:bg-white text-gray-800 rounded-full items-center justify-center shadow-md hover:shadow-lg border border-gray-100 transition-all duration-300 cursor-pointer md:opacity-0 md:translate-x-4 md:group-hover/slider:opacity-100 md:group-hover/slider:translate-x-0">
+          <button className="swiper-button-next-custom absolute hidden md:flex right-6 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/90 hover:bg-white text-gray-800 rounded-full items-center justify-center shadow-md hover:shadow-lg border border-gray-100 transition-all duration-300 cursor-pointer md:opacity-0 md:translate-x-4 md:group-hover/slider:opacity-100 md:group-hover/slider:translate-x-0">
             <ChevronRight className="w-6 h-6 text-gray-700 hover:text-primary-600 transition-colors" />
           </button>
         </Swiper>

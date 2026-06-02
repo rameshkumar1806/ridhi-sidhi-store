@@ -188,39 +188,9 @@
 }
 
 /* Swiper Custom Navigation Buttons & Pagination styling */
-.swiper-button-next,
-.swiper-button-prev {
-  background: rgba(255, 255, 255, 0.75) !important;
-  backdrop-filter: blur(8px) !important;
-  width: 44px !important;
-  height: 44px !important;
-  border-radius: 9999px !important;
-  color: #FF6B35 !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
-  border: 1px solid rgba(255, 107, 53, 0.15) !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-}
-
 .swiper-button-next::after,
 .swiper-button-prev::after {
-  font-size: 16px !important;
-  font-weight: bold !important;
-}
-
-.swiper-button-next:hover,
-.swiper-button-prev:hover {
-  background: #FF6B35 !important;
-  color: #ffffff !important;
-  transform: scale(1.06) !important;
-  box-shadow: 0 6px 15px rgba(255, 107, 53, 0.3) !important;
-}
-
-.swiper-button-next {
-  right: 16px !important;
-}
-
-.swiper-button-prev {
-  left: 16px !important;
+  display: none !important; /* Hide default Swiper font arrows so they don't break SVG alignment */
 }
 
 .swiper-pagination-bullet {
