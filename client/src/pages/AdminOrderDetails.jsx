@@ -23,9 +23,9 @@ const AdminOrderDetails = () => {
     dispatch(fetchOrder(id));
   }, [dispatch, id]);
 
-  const handleStatusChange = async (newStatus) => {
+  const handleStatusChange = async (newStatus, customNote = null) => {
     setUpdating(true);
-    const result = await dispatch(updateOrderStatus({ id, status: newStatus }));
+    const result = await dispatch(updateOrderStatus({ id, status: newStatus, note: customNote }));
     if (updateOrderStatus.fulfilled.match(result)) {
       toast.success(`Order status updated to ${newStatus}`);
     } else {
@@ -181,22 +181,46 @@ const AdminOrderDetails = () => {
                 <AlertCircle className="w-4 h-4 text-primary-500" /> Manage Status
               </h3>
               <div className="space-y-4">
-                <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
-                  {['pending', 'confirmed', 'packed', 'processing', 'shipped', 'delivered', 'cancelled'].map((status) => (
+                {order.orderStatus === 'pending' ? (
+                  <div className="flex flex-col gap-2">
                     <button
-                      key={status}
-                      onClick={() => handleStatusChange(status)}
-                      disabled={updating || order.orderStatus === status}
-                      className={`py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all
-                        ${order.orderStatus === status 
-                          ? `bg-${getStatusColor(status)}-500 text-white shadow-lg` 
-                          : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100'}
-                        disabled:opacity-50 disabled:cursor-not-allowed`}
+                      onClick={() => handleStatusChange('confirmed', 'Order confirmed by admin')}
+                      disabled={updating}
+                      className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold uppercase tracking-wider text-xs shadow-md transition-all disabled:opacity-50 cursor-pointer"
                     >
-                      {status === order.orderStatus && updating ? '...' : status}
+                      {updating ? 'Processing...' : 'Confirm Order'}
                     </button>
-                  ))}
-                </div>
+                    <button
+                      onClick={() => {
+                        const reason = window.prompt('Enter reason for rejection:');
+                        if (reason !== null) {
+                          handleStatusChange('cancelled', reason || 'Rejected by admin');
+                        }
+                      }}
+                      disabled={updating}
+                      className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-bold uppercase tracking-wider text-xs shadow-md transition-all disabled:opacity-50 cursor-pointer"
+                    >
+                      {updating ? 'Processing...' : 'Reject Order'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+                    {['confirmed', 'packed', 'processing', 'shipped', 'delivered', 'cancelled'].map((status) => (
+                      <button
+                        key={status}
+                        onClick={() => handleStatusChange(status)}
+                        disabled={updating || order.orderStatus === status}
+                        className={`py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer
+                          ${order.orderStatus === status 
+                            ? `bg-${getStatusColor(status)}-500 text-white shadow-lg` 
+                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100'}
+                          disabled:opacity-50 disabled:cursor-not-allowed`}
+                      >
+                        {status === order.orderStatus && updating ? '...' : status}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 

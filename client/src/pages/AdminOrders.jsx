@@ -42,11 +42,12 @@ const AdminOrders = () => {
     setPage(1);
   };
 
-  const handleStatusChange = async (orderId, newStatus) => {
+  const handleStatusChange = async (orderId, newStatus, note = null) => {
     setUpdatingId(orderId);
-    const result = await dispatch(updateOrderStatus({ id: orderId, status: newStatus }));
+    const result = await dispatch(updateOrderStatus({ id: orderId, status: newStatus, note }));
     if (updateOrderStatus.fulfilled.match(result)) {
       toast.success('Order status updated');
+      dispatch(fetchDashboardStats());
     } else {
       toast.error('Failed to update status');
     }
@@ -253,18 +254,28 @@ const AdminOrders = () => {
                   <td className="p-4">
                     <select
                       value={order.orderStatus}
-                      onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                      onChange={(e) => {
+                        if (e.target.value === 'cancelled') {
+                          const reason = window.prompt('Enter reason for rejection:');
+                          if (reason !== null) {
+                            handleStatusChange(order._id, 'cancelled', reason || 'Rejected by admin');
+                          }
+                        } else {
+                          handleStatusChange(order._id, e.target.value, e.target.value === 'confirmed' ? 'Order confirmed by admin' : undefined);
+                        }
+                      }}
                       disabled={updatingId === order._id || order.orderStatus === 'delivered' || order.orderStatus === 'cancelled'}
                       className={`text-xs font-bold rounded-full px-3 py-1.5 border-0 focus:ring-2 cursor-pointer transition-colors
                         bg-${getStatusColor(order.orderStatus)}-100 text-${getStatusColor(order.orderStatus)}-800
                         disabled:opacity-70 disabled:cursor-not-allowed`}
                     >
-                      <option value="pending">Pending</option>
+                      <option value="pending">Pending Confirmation</option>
                       <option value="confirmed">Confirmed</option>
                       <option value="packed">Packed</option>
+                      <option value="processing">Processing</option>
                       <option value="shipped">Shipped</option>
                       <option value="delivered">Delivered</option>
-                      <option value="cancelled">Cancelled</option>
+                      <option value="cancelled">Cancelled (Rejected)</option>
                     </select>
                   </td>
                   <td className="p-4">

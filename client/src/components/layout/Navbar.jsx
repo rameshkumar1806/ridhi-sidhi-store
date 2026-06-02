@@ -9,6 +9,8 @@ import { logout } from '../../redux/slices/authSlice';
 import { selectCartItemsCount } from '../../redux/slices/cartSlice';
 import { fetchSearchSuggestions, clearSuggestions } from '../../redux/slices/productSlice';
 import { getProductImage } from '../../utils/helpers';
+import api from '../../services/api';
+import NotificationCenter from '../common/NotificationCenter';
 
 const CATEGORIES = [
   { name: 'Dals & Pulses', slug: 'dals-pulses', icon: '🫘' },
@@ -35,6 +37,28 @@ const Navbar = () => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  useEffect(() => {
+    if (!user) {
+      setUnreadNotifications(0);
+      return;
+    }
+    const fetchUnreadCount = async () => {
+      try {
+        const { data } = await api.get('/notifications');
+        if (data?.success) {
+          const unread = data.data.filter(n => !n.isRead).length;
+          setUnreadNotifications(unread);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 10000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   const searchRef = useRef(null);
   const userMenuRef = useRef(null);
@@ -200,6 +224,11 @@ const Navbar = () => {
                 </Link>
               )}
 
+              {/* Notification Center */}
+              {user && (
+                <NotificationCenter />
+              )}
+
               {/* Cart - Hidden on mobile, moved to bottom nav */}
               <Link
                 to="/cart"
@@ -254,8 +283,13 @@ const Navbar = () => {
                         </>
                       ) : (
                         <>
-                          <Link to="/profile" onClick={() => setShowUserMenu(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 transition-colors">
-                            <User className="w-4 h-4" /> My Profile
+                          <Link to="/profile" onClick={() => setShowUserMenu(false)} className="flex items-center justify-between px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 transition-colors">
+                            <span className="flex items-center gap-3">
+                              <User className="w-4 h-4" /> My Profile
+                            </span>
+                            {unreadNotifications > 0 && (
+                              <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                            )}
                           </Link>
                           <Link to="/my-orders" onClick={() => setShowUserMenu(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50 text-sm text-gray-700 transition-colors">
                             <Package className="w-4 h-4" /> My Orders
@@ -323,9 +357,12 @@ const Navbar = () => {
             </span>
           )}
         </Link>
-        <Link to={user ? "/profile" : "/login"} className={`flex flex-col items-center justify-center w-full h-full space-y-1 ${location.pathname === '/profile' ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>
+        <Link to={user ? "/profile" : "/login"} className={`relative flex flex-col items-center justify-center w-full h-full space-y-1 ${location.pathname === '/profile' ? 'text-primary-600' : 'text-gray-500 hover:text-gray-900'}`}>
           <User className={`w-5 h-5 ${location.pathname === '/profile' ? 'fill-primary-50 stroke-primary-600' : ''}`} />
           <span className="text-[10px] font-medium">{user ? 'Account' : 'Login'}</span>
+          {user && unreadNotifications > 0 && (
+            <span className="absolute top-1 right-[30%] w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse" />
+          )}
         </Link>
       </div>
 
@@ -403,10 +440,15 @@ const Navbar = () => {
                   <Link
                     to="/profile"
                     onClick={() => setShowMobileMenu(false)}
-                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+                    className="flex items-center justify-between px-4 py-2.5 rounded-xl hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
                   >
-                    <User className="w-4 h-4 text-gray-500" />
-                    <span>My Profile</span>
+                    <span className="flex items-center gap-3">
+                      <User className="w-4 h-4 text-gray-500" />
+                      <span>My Profile</span>
+                    </span>
+                    {unreadNotifications > 0 && (
+                      <span className="w-2.5 h-2.5 bg-red-500 rounded-full mr-2 border-2 border-white animate-pulse" />
+                    )}
                   </Link>
                   {user.role === 'admin' ? (
                     <Link

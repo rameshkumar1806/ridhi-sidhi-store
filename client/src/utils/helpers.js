@@ -57,7 +57,7 @@ export const getStatusColor = (status) => {
 // Get order status label
 export const getStatusLabel = (status) => {
   const labels = {
-    pending: 'Order Placed',
+    pending: 'Pending Confirmation',
     confirmed: 'Confirmed',
     packed: 'Packed',
     processing: 'Processing',

@@ -19,6 +19,7 @@ import couponRoutes from './routes/couponRoutes.js';
 import bannerRoutes from './routes/bannerRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import whatsappRoutes from './routes/whatsappRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 dotenv.config();
 connectDB();
@@ -87,6 +88,7 @@ app.use('/api/coupons', couponRoutes);
 app.use('/api/banners', bannerRoutes);
 app.use('/api/admin/users', userRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

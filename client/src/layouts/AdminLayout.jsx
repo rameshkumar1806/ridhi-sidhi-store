@@ -6,6 +6,7 @@ import {
   ChevronRight, LogOut, Store, Menu, X
 } from 'lucide-react';
 import { logout } from '../redux/slices/authSlice';
+import NotificationCenter from '../components/common/NotificationCenter';
 
 const navItems = [
   { label: 'Dashboard', icon: LayoutDashboard, path: '/admin/dashboard' },
@@ -144,7 +145,8 @@ const AdminLayout = () => {
               </h1>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
+            <NotificationCenter />
             <span className="hidden sm:inline-flex bg-orange-100 text-orange-600 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider">Admin</span>
           </div>
         </header>

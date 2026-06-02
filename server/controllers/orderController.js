@@ -4,6 +4,7 @@ import crypto from 'crypto';
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import { sendOrderConfirmationEmail } from '../utils/sendEmail.js';
+import Notification from '../models/Notification.js';
 
 const getRazorpayInstance = () => {
   return new Razorpay({
@@ -63,6 +64,24 @@ export const createOrder = asyncHandler(async (req, res) => {
     await Product.findByIdAndUpdate(item.product, {
       $inc: { stock: -item.quantity, soldCount: item.quantity },
     });
+  }
+
+  // Create admin notification for the new order
+  try {
+    await Notification.create({
+      title: 'New Order Placed',
+      message: `Order #${order._id.toString().slice(-8).toUpperCase()} has been placed by ${req.user.name} for ₹${totalAmount}`,
+      type: 'new_order',
+      order: order._id,
+      recipientRole: 'admin',
+      metadata: {
+        orderNumber: order._id.toString().slice(-8).toUpperCase(),
+        customerName: req.user.name,
+        amount: totalAmount,
+      },
+    });
+  } catch (err) {
+    console.error('Failed to create admin notification:', err.message);
   }
 
   // Send confirmation email (non-blocking)
@@ -130,6 +149,27 @@ export const verifyRazorpayPayment = asyncHandler(async (req, res) => {
   order.statusHistory.push({ status: 'confirmed', note: 'Payment received' });
 
   await order.save();
+
+  // Notify user that payment is verified and order is confirmed
+  if (order.user) {
+    try {
+      await Notification.create({
+        recipient: order.user,
+        recipientRole: 'user',
+        title: 'Order Confirmed',
+        message: `Payment verified. Your order #${order._id.toString().slice(-8).toUpperCase()} has been confirmed!`,
+        type: 'order_confirmed',
+        order: order._id,
+        metadata: {
+          orderNumber: order._id.toString().slice(-8).toUpperCase(),
+          amount: order.totalAmount,
+        },
+      });
+    } catch (err) {
+      console.error('Failed to create customer notification on payment verification:', err.message);
+    }
+  }
+
   res.json({ success: true, message: 'Payment verified successfully', data: order });
 });
 
@@ -331,6 +371,41 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
 
   await order.save();
   await order.populate('user', 'name email');
+
+  // Notify user about status change
+  if (order.user) {
+    try {
+      let notificationTitle = 'Order Update';
+      let notificationMessage = `Your order #${order._id.toString().slice(-8).toUpperCase()} status has been updated to ${status}.`;
+      let notificationType = 'order_status_update';
+
+      if (status === 'confirmed') {
+        notificationTitle = 'Order Confirmed';
+        notificationMessage = `Your order #${order._id.toString().slice(-8).toUpperCase()} has been confirmed!`;
+        notificationType = 'order_confirmed';
+      } else if (status === 'cancelled') {
+        notificationTitle = 'Order Cancelled';
+        notificationMessage = `Your order #${order._id.toString().slice(-8).toUpperCase()} has been cancelled. Reason: ${note || 'Cancelled by admin'}`;
+        notificationType = 'order_rejected';
+      }
+
+      await Notification.create({
+        recipient: order.user._id || order.user,
+        recipientRole: 'user',
+        title: notificationTitle,
+        message: notificationMessage,
+        type: notificationType,
+        order: order._id,
+        metadata: {
+          orderNumber: order._id.toString().slice(-8).toUpperCase(),
+          amount: order.totalAmount,
+          reason: status === 'cancelled' ? (note || 'Cancelled by admin') : undefined,
+        },
+      });
+    } catch (err) {
+      console.error('Failed to create customer status notification:', err.message);
+    }
+  }
 
   res.json({ success: true, data: order });
 });
