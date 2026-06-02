@@ -13,17 +13,9 @@ const storage = new CloudinaryStorage({
   params: {
     folder: 'ridhi-sidhi',
     allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
-    transformation: [{ width: 800, height: 800, crop: 'limit' }],
-  },
-});
-
-const localStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, `${uniqueSuffix}-${file.originalname}`);
+    transformation: [
+      { width: 800, height: 800, crop: 'limit', fetch_format: 'auto', quality: 'auto' }
+    ],
   },
 });
 
@@ -35,12 +27,8 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// Use local storage as fallback if cloudinary not configured
-const isCloudinaryConfigured =
-  process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_CLOUD_NAME !== 'demo';
-
 export const upload = multer({
-  storage: isCloudinaryConfigured ? storage : localStorage,
+  storage: storage,
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });

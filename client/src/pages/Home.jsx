@@ -73,16 +73,19 @@ const Home = () => {
             if (matchedCategory && !seen.has(matchedCategory)) {
               seen.add(matchedCategory);
 
-              // Map placeholder/database images to high-quality local assets
+              // Map placeholder/database images to high-quality local assets unless it is a Cloudinary URL
               let displayImage = banner.image;
-              if (matchedCategory === 'atta') {
-                displayImage = '/images/banner_atta.png';
-              } else if (matchedCategory === 'dry_fruits') {
-                displayImage = '/images/dry_fruits_banner.png';
-              } else if (matchedCategory === 'oils') {
-                displayImage = '/images/banner_oils.png';
-              } else if (matchedCategory === 'dal') {
-                displayImage = '/images/banner_dal.png';
+              const isCloudinaryUrl = banner.image && banner.image.includes('cloudinary');
+              if (!isCloudinaryUrl) {
+                if (matchedCategory === 'atta') {
+                  displayImage = '/images/banner_atta.png';
+                } else if (matchedCategory === 'dry_fruits') {
+                  displayImage = '/images/dry_fruits_banner.png';
+                } else if (matchedCategory === 'oils') {
+                  displayImage = '/images/banner_oils.png';
+                } else if (matchedCategory === 'dal') {
+                  displayImage = '/images/banner_dal.png';
+                }
               }
 
               uniqueBanners.push({

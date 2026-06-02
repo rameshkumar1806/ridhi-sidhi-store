@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Banner from '../models/Banner.js';
+import { cloudinary } from '../config/cloudinary.js';
 
 // @desc    Get active banners
 // @route   GET /api/banners
@@ -39,8 +40,9 @@ export const getAllBanners = asyncHandler(async (req, res) => {
 // @route   POST /api/admin/banners
 // @access  Private/Admin
 export const createBanner = asyncHandler(async (req, res) => {
-  const image = req.file ? req.file.path || `/uploads/${req.file.filename}` : req.body.image;
-  const banner = await Banner.create({ ...req.body, image });
+  const image = req.file ? req.file.path : req.body.image;
+  const public_id = req.file ? req.file.filename : undefined;
+  const banner = await Banner.create({ ...req.body, image, public_id });
   res.status(201).json({ success: true, data: banner });
 });
 
@@ -48,24 +50,51 @@ export const createBanner = asyncHandler(async (req, res) => {
 // @route   PUT /api/admin/banners/:id
 // @access  Private/Admin
 export const updateBanner = asyncHandler(async (req, res) => {
-  const updateData = { ...req.body };
-  if (req.file) updateData.image = req.file.path || `/uploads/${req.file.filename}`;
-  const banner = await Banner.findByIdAndUpdate(req.params.id, updateData, { new: true });
+  const banner = await Banner.findById(req.params.id);
+
   if (!banner) {
     res.status(404);
     throw new Error('Banner not found');
   }
-  res.json({ success: true, data: banner });
+
+  const updateData = { ...req.body };
+  if (req.file) {
+    // Delete old image from Cloudinary if it exists
+    if (banner.public_id) {
+      try {
+        await cloudinary.uploader.destroy(banner.public_id);
+      } catch (err) {
+        console.error(`Failed to delete banner image ${banner.public_id} from Cloudinary:`, err);
+      }
+    }
+    updateData.image = req.file.path;
+    updateData.public_id = req.file.filename;
+  }
+
+  const updatedBanner = await Banner.findByIdAndUpdate(req.params.id, updateData, { new: true });
+  res.json({ success: true, data: updatedBanner });
 });
 
 // @desc    Delete banner (Admin)
 // @route   DELETE /api/admin/banners/:id
 // @access  Private/Admin
 export const deleteBanner = asyncHandler(async (req, res) => {
-  const banner = await Banner.findByIdAndDelete(req.params.id);
+  const banner = await Banner.findById(req.params.id);
+
   if (!banner) {
     res.status(404);
     throw new Error('Banner not found');
   }
+
+  // Delete image from Cloudinary if it exists
+  if (banner.public_id) {
+    try {
+      await cloudinary.uploader.destroy(banner.public_id);
+    } catch (err) {
+      console.error(`Failed to delete banner image ${banner.public_id} from Cloudinary:`, err);
+    }
+  }
+
+  await banner.deleteOne();
   res.json({ success: true, message: 'Banner deleted' });
 });

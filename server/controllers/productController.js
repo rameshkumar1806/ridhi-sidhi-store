@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import slugify from 'slugify';
 import Product from '../models/Product.js';
 import Category from '../models/Category.js';
+import { cloudinary } from '../config/cloudinary.js';
 
 // @desc    Get all products with filtering, search, pagination
 // @route   GET /api/products
@@ -239,6 +240,19 @@ export const deleteProduct = asyncHandler(async (req, res) => {
   if (!product) {
     res.status(404);
     throw new Error('Product not found');
+  }
+
+  // Delete images from Cloudinary if they exist
+  if (product.images && product.images.length > 0) {
+    for (const img of product.images) {
+      if (img.public_id) {
+        try {
+          await cloudinary.uploader.destroy(img.public_id);
+        } catch (err) {
+          console.error(`Failed to delete product image ${img.public_id} from Cloudinary:`, err);
+        }
+      }
+    }
   }
 
   await product.deleteOne();

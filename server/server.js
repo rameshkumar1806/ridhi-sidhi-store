@@ -75,8 +75,8 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Static files (local uploads)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Static files (local uploads) - disabled for Cloudinary migration
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API Routes
 app.use('/api/auth', authRoutes);
