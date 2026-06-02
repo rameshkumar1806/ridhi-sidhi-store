@@ -21,27 +21,27 @@ const Home = () => {
   const [heroBanners, setHeroBanners] = useState([
     {
       image: '/images/banner_atta.png',
-      title: 'Premium Quality Atta',
-      subtitle: 'Freshly milled and rich in nutrients',
-      link: '/products?category=atta-flours',
+      title: 'Quality Atta & Flours',
+      subtitle: 'Premium quality wheat flour for soft & healthy rotis',
+      link: '/products?category=flour-atta',
     },
     {
       image: '/images/banner_oils.png',
       title: 'Pure Cooking Oils',
-      subtitle: 'Healthy and natural extracted oils',
-      link: '/products?category=edible-oils',
-    },
-    {
-      image: '/images/banner_dal.png',
-      title: 'Fresh Pulses & Dal',
-      subtitle: 'Wholesome and unpolished lentils',
-      link: '/products?category=dals-pulses',
+      subtitle: 'Healthy and natural extracted cooking oils',
+      link: '/products?category=oils-ghee',
     },
     {
       image: '/images/dry_fruits_banner.png',
-      title: 'Premium Dry Fruits Sale',
-      subtitle: 'Up to 20% off on dry fruits & nuts',
+      title: 'Fresh Dry Fruits',
+      subtitle: 'Premium quality healthy nuts & dry fruits',
       link: '/products?category=dry-fruits-nuts',
+    },
+    {
+      image: '/images/banner_dal.png',
+      title: 'Premium Dal Collection',
+      subtitle: 'Wholesome and unpolished nutritious pulses',
+      link: '/products?category=dals-pulses',
     },
   ]);
 
@@ -63,7 +63,7 @@ const Home = () => {
 
               // Map placeholder/database images to high-quality local assets
               let displayImage = banner.image;
-              if (key.includes('atta')) {
+              if (key.includes('atta') || key.includes('flour')) {
                 displayImage = '/images/banner_atta.png';
               } else if (key.includes('dry fruits') || key.includes('nuts')) {
                 displayImage = '/images/dry_fruits_banner.png';
