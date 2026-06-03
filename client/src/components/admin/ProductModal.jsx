@@ -329,7 +329,7 @@ const ProductModal = ({ isOpen, onClose, onSuccess, productToEdit = null }) => {
                       <button 
                         type="button"
                         onClick={() => removeExistingImage(idx)}
-                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full shadow-lg scale-0 group-hover:scale-100 transition-transform z-10"
+                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full shadow-lg scale-100 md:scale-0 md:group-hover:scale-100 transition-transform z-10"
                       >
                         <XCircle className="w-4 h-4" />
                       </button>
@@ -341,7 +341,7 @@ const ProductModal = ({ isOpen, onClose, onSuccess, productToEdit = null }) => {
                       <button 
                         type="button"
                         onClick={() => removeFile(idx)}
-                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full shadow-lg scale-0 group-hover:scale-100 transition-transform"
+                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full shadow-lg scale-100 md:scale-0 md:group-hover:scale-100 transition-transform z-10"
                       >
                         <XCircle className="w-4 h-4" />
                       </button>
