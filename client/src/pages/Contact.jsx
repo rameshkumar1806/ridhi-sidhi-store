@@ -43,9 +43,9 @@ const Contact = () => {
               <div>
                 <h3 className="font-bold text-gray-900 mb-2">Our Store</h3>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  123, Main Market,<br/>
-                  Gandhi Nagar, New Delhi<br/>
-                  India - 110031
+                  Gali, Street Number 3, Milkman Colony,<br/>
+                  Jodhpur, Rajasthan<br/>
+                  India - 342003
                 </p>
               </div>
             </div>
@@ -57,7 +57,7 @@ const Contact = () => {
               <div>
                 <h3 className="font-bold text-gray-900 mb-2">Call Us</h3>
                 <p className="text-gray-600 text-sm mb-1">Mon-Sun: 9:00 AM – 9:00 PM</p>
-                <a href="tel:+919999999999" className="text-primary-600 font-semibold hover:underline">+91 99999 99999</a>
+                <a href="tel:+916350200450" className="text-primary-600 font-semibold hover:underline">+91 6350 200 450</a>
               </div>
             </div>
 

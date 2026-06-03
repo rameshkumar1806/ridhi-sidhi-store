@@ -132,12 +132,12 @@ const Navbar = () => {
         <div className="container-custom flex items-center justify-between">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              <Phone className="w-3 h-3" /> +91-99825-48621
+              <Phone className="w-3 h-3" /> +91 6350 200 450
             </span>
             <span>Free delivery on orders above ₹499 🛵</span>
           </div>
           <div className="flex items-center gap-4">
-            <a href="https://wa.me/919982548621?text=Hello%20Ridhi%20Sidhi%20Store%2C%20I%20want%20to%20place%20an%20order!" target="_blank" rel="noreferrer" className="hover:text-green-400 transition-colors flex items-center gap-1">
+            <a href="https://wa.me/916350200450?text=Hello%20Ridhi%20Sidhi%20Store%2C%20I%20want%20to%20place%20an%20order!" target="_blank" rel="noreferrer" className="hover:text-green-400 transition-colors flex items-center gap-1">
               WhatsApp Order
             </a>
             <span>9AM - 9PM | Mon-Sun</span>

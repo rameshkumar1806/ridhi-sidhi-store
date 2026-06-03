@@ -129,11 +129,11 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-primary-400 flex-shrink-0 mt-0.5" />
-                <span className="text-sm text-gray-400">123, Main Market, Gandhi Nagar, New Delhi - 110031</span>
+                <span className="text-sm text-gray-400">Gali, Street Number 3, Milkman Colony, Jodhpur, Rajasthan 342003</span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-4 h-4 text-primary-400 flex-shrink-0" />
-                <a href="tel:+919982548621" className="text-sm text-gray-400 hover:text-primary-400 transition-colors">+91-99825-48621</a>
+                <a href="tel:+916350200450" className="text-sm text-gray-400 hover:text-primary-400 transition-colors">+91 6350 200 450</a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-4 h-4 text-primary-400 flex-shrink-0" />
@@ -145,7 +145,7 @@ const Footer = () => {
               </li>
             </ul>
             <a
-              href="https://wa.me/919982548621?text=Hello%20Ridhi%20Sidhi%20Store%2C%20I%20want%20to%20place%20an%20order!"
+              href="https://wa.me/916350200450?text=Hello%20Ridhi%20Sidhi%20Store%2C%20I%20want%20to%20place%20an%20order!"
               target="_blank"
               rel="noreferrer"
               className="mt-4 flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-4 py-2.5 rounded-xl transition-colors w-fit"

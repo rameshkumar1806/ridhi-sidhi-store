@@ -155,7 +155,7 @@ Phone: ${address.phone}
 Address: ${addressText}
 
 Thank you!`;
-        const whatsappUrl = `https://wa.me/919982548621?text=${encodeURIComponent(message)}`;
+        const whatsappUrl = `https://wa.me/916350200450?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
       }
     } else if (selectedPayment === 'razorpay') {
