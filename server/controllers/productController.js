@@ -161,25 +161,34 @@ export const createProduct = asyncHandler(async (req, res) => {
   if (existing) slug = `${slug}-${Date.now()}`;
 
   const images = req.files
-    ? req.files.map((file) => ({
-        url: file.path || `/uploads/${file.filename}`,
-        public_id: file.filename,
-        alt: name,
-      }))
+    ? req.files.map((file) => {
+        const baseUrl = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
+        const url = (file.path && file.path.startsWith('http')) ? file.path : `${baseUrl}/uploads/${file.filename}`;
+        return {
+          url,
+          public_id: file.filename,
+          alt: name,
+        };
+      })
     : req.body.images
     ? JSON.parse(req.body.images)
     : [];
 
   const product = await Product.create({
     name, slug, description, shortDescription, brand, category,
-    price, mrp, discount, stock: Number(stock) || 0, quantity, unitType,
+    price: Number(price), 
+    mrp: mrp ? Number(mrp) : undefined, 
+    discount: discount ? Number(discount) : 0, 
+    stock: Number(stock) || 0, 
+    quantity, unitType,
     lowStockAlert: Number(lowStockAlert) || 5,
     tags: tags ? (Array.isArray(tags) ? tags : tags.split(',').map((t) => t.trim())) : [],
     images,
     isFeatured: isFeatured === 'true' || isFeatured === true,
     isBestSeller: isBestSeller === 'true' || isBestSeller === true,
     isTrending: isTrending === 'true' || isTrending === true,
-    gst, hsn, sku,
+    gst: gst ? Number(gst) : 5, 
+    hsn, sku,
   });
 
   await product.populate('category', 'name slug');
@@ -199,14 +208,41 @@ export const updateProduct = asyncHandler(async (req, res) => {
 
   const updateData = { ...req.body };
 
-  if (req.files && req.files.length > 0) {
-    const newImages = req.files.map((file) => ({
-      url: file.path || `/uploads/${file.filename}`,
-      public_id: file.filename,
-      alt: product.name,
-    }));
-    updateData.images = [...(product.images || []), ...newImages];
+  let finalImages = product.images || [];
+
+  if (req.body.existingImages !== undefined) {
+    const existingImages = JSON.parse(req.body.existingImages);
+    finalImages = [...existingImages];
+    
+    const existingImagePublicIds = existingImages.map(img => img.public_id);
+    const imagesToDelete = (product.images || []).filter(
+      img => img.public_id && !existingImagePublicIds.includes(img.public_id)
+    );
+
+    for (const img of imagesToDelete) {
+      try {
+        await cloudinary.uploader.destroy(img.public_id);
+      } catch (err) {
+        console.error(`Failed to delete product image ${img.public_id} from Cloudinary:`, err);
+      }
+    }
   }
+
+  if (req.files && req.files.length > 0) {
+    const newImages = req.files.map((file) => {
+      // file.path from Cloudinary starts with http/https, but from local diskStorage it's an absolute path
+      const baseUrl = process.env.NODE_ENV === 'production' ? '' : 'http://localhost:5000';
+      const url = (file.path && file.path.startsWith('http')) ? file.path : `${baseUrl}/uploads/${file.filename}`;
+      return {
+        url,
+        public_id: file.filename,
+        alt: product.name,
+      };
+    });
+    finalImages = [...finalImages, ...newImages];
+  }
+
+  updateData.images = finalImages;
 
   if (updateData.name && updateData.name !== product.name) {
     updateData.slug = slugify(updateData.name, { lower: true, strict: true });
@@ -216,12 +252,21 @@ export const updateProduct = asyncHandler(async (req, res) => {
     updateData.tags = updateData.tags.split(',').map((t) => t.trim());
   }
 
-  if (updateData.stock) updateData.stock = Number(updateData.stock);
-  if (updateData.lowStockAlert) updateData.lowStockAlert = Number(updateData.lowStockAlert);
+  if (updateData.stock !== undefined) updateData.stock = Number(updateData.stock);
+  if (updateData.lowStockAlert !== undefined) updateData.lowStockAlert = Number(updateData.lowStockAlert);
+  if (updateData.price !== undefined) updateData.price = Number(updateData.price);
+  if (updateData.mrp !== undefined) updateData.mrp = updateData.mrp === '' ? undefined : Number(updateData.mrp);
+  if (updateData.discount !== undefined) updateData.discount = updateData.discount === '' ? 0 : Number(updateData.discount);
+  if (updateData.gst !== undefined) updateData.gst = updateData.gst === '' ? 5 : Number(updateData.gst);
 
   // Ensure quantity and unitType are preserved if not provided in body (unlikely but safe)
   if (!updateData.quantity && product.quantity) updateData.quantity = product.quantity;
   if (!updateData.unitType && product.unitType) updateData.unitType = product.unitType;
+
+  // Prevent duplicate key error for empty SKUs
+  if (updateData.sku === '') {
+    delete updateData.sku;
+  }
 
   const updated = await Product.findByIdAndUpdate(req.params.id, updateData, {
     new: true,

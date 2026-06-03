@@ -85,11 +85,15 @@ const ProductModal = ({ isOpen, onClose, onSuccess, productToEdit = null }) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  const removeExistingImage = (index) => {
+    setExistingImages(prev => prev.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Validation
-    if (!formData.name || !formData.category || !formData.price || formData.stock === '' || !formData.qtyValue) {
+    if (!formData.name || !formData.category || !formData.price || formData.stock === '' || !formData.qtyValue || !formData.description) {
       return toast.error('Please fill all required fields');
     }
 
@@ -116,6 +120,10 @@ const ProductModal = ({ isOpen, onClose, onSuccess, productToEdit = null }) => {
         files.forEach(file => {
           submitData.append('images', file);
         });
+      }
+
+      if (productToEdit) {
+        submitData.append('existingImages', JSON.stringify(existingImages));
       }
 
       if (productToEdit) {
@@ -290,8 +298,8 @@ const ProductModal = ({ isOpen, onClose, onSuccess, productToEdit = null }) => {
                     <input type="text" name="shortDescription" value={formData.shortDescription} onChange={handleInputChange} className="input-field bg-gray-50 border-gray-200" placeholder="Brief 1-line description" maxLength={150} />
                   </div>
                   <div>
-                    <label className="input-label font-bold text-gray-700">Full Description</label>
-                    <textarea name="description" value={formData.description} onChange={handleInputChange} className="input-field bg-gray-50 border-gray-200 min-h-[120px] resize-none" placeholder="Detailed product specifications..." />
+                    <label className="input-label font-bold text-gray-700">Full Description *</label>
+                    <textarea required name="description" value={formData.description} onChange={handleInputChange} className="input-field bg-gray-50 border-gray-200 min-h-[120px] resize-none" placeholder="Detailed product specifications..." />
                   </div>
                   <div>
                     <label className="input-label font-bold text-gray-700">Search Tags (comma separated)</label>
@@ -318,6 +326,13 @@ const ProductModal = ({ isOpen, onClose, onSuccess, productToEdit = null }) => {
                       <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                         <span className="text-white text-[10px] font-bold">Existing</span>
                       </div>
+                      <button 
+                        type="button"
+                        onClick={() => removeExistingImage(idx)}
+                        className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full shadow-lg scale-0 group-hover:scale-100 transition-transform z-10"
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </button>
                     </div>
                   ))}
                   {files.map((file, idx) => (
